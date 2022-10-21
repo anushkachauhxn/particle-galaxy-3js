@@ -45,10 +45,33 @@ export default class Sketch {
     this.camera.position.set(0, 2, 2);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.time = 0;
+    this.materials = [];
 
-    this.isPlaying = true;
+    let opts = [
+      {
+        min_radius: 0.5,
+        max_radius: 1.5,
+        color: "#f7b373",
+        size: 1,
+      },
+      {
+        min_radius: 0.55,
+        max_radius: 1.2,
+        color: "#88b3ce",
+        size: 0.6,
+      },
+      {
+        min_radius: 0.5,
+        max_radius: 1.5,
+        color: "#ce9dcf",
+        size: 0.6,
+      },
+    ];
+    opts.forEach((op) => {
+      this.addObject(op);
+    });
 
-    this.addObjects();
+    // this.addObjects();
     this.resize();
     this.render();
     this.setupResize();
@@ -76,11 +99,11 @@ export default class Sketch {
     this.camera.updateProjectionMatrix();
   }
 
-  addObjects() {
+  addObject(op) {
     let that = this;
     let count = 10000;
-    let min_radius = 0.5;
-    let max_radius = 1;
+    let min_radius = op.min_radius;
+    let max_radius = op.max_radius;
     let particleGeo = new THREE.PlaneBufferGeometry(1, 1);
 
     let geo = new THREE.InstancedBufferGeometry();
@@ -105,13 +128,15 @@ export default class Sketch {
       );
     }
 
-    this.material = new THREE.ShaderMaterial({
+    let mat = new THREE.ShaderMaterial({
       extensions: {
         derivatives: "#extension GL_OES_standard_derivatives : enable",
       },
       side: THREE.DoubleSide,
       uniforms: {
         uTexture: { value: new THREE.TextureLoader().load(particleTexture) },
+        uColor: { value: new THREE.Color(op.color) },
+        size: { value: op.size },
         time: { value: 0 },
         resolution: { value: new THREE.Vector4() },
       },
@@ -121,16 +146,18 @@ export default class Sketch {
       vertexShader: vertex,
       fragmentShader: fragment,
     });
+    this.materials.push(mat);
 
-    this.points = new THREE.Mesh(geo, this.material);
+    this.points = new THREE.Mesh(geo, mat);
     this.scene.add(this.points);
   }
 
   render() {
-    if (!this.isPlaying) return;
-
     this.time += 0.05;
-    this.material.uniforms.time.value = this.time * 0.5;
+    this.materials.forEach((mat) => {
+      mat.uniforms.time.value = this.time * 0.5;
+    });
+
     requestAnimationFrame(this.render.bind(this));
     this.renderer.render(this.scene, this.camera);
   }

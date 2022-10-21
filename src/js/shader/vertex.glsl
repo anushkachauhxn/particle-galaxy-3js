@@ -1,4 +1,5 @@
 uniform float time;
+uniform float size;
 varying vec2 vUv;
 varying vec3 vPosition;
 uniform vec2 pixels;
@@ -225,7 +226,7 @@ void main() {
 
   // add position
   vec4 view_pos = viewMatrix * vec4(particle_pos, 1.);
-  view_pos.xyz += position * (0.01 + 0.1 * particle_size);
+  view_pos.xyz += position * (0.01 + 0.1 * particle_size) * size;
 
   // gl_Position = projectionMatrix * viewMatrix*modelMatrix * vec4( final_pos, 1.0 );
   gl_Position = projectionMatrix * view_pos;
