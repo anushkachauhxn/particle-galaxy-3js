@@ -1,5 +1,6 @@
 uniform float time;
 uniform float size;
+uniform float uAmp;
 uniform vec3 uMouse;
 varying vec2 vUv;
 varying vec3 vPosition;
@@ -206,7 +207,7 @@ vec3 getOffset(vec3 p) {
   float twist_scale = 0.5 + cnoise(pos) * 0.5;
   vec3 temp_pos = rotation3dY(time * (0.1 + 0.5 * twist_scale) + length(pos.xz)) * p; // depends on distance from the center
   vec3 offset = fbm_vec3(temp_pos, 0.5, 0.);
-  return offset * 0.1;
+  return offset * 0.1 * uAmp;
 }
 
 void main() {
@@ -228,7 +229,7 @@ void main() {
   // mouse disturbance
   float distToMouse = pow(1. - saturate(length(uMouse.xz - particle_pos.xz) - 0.1), 4.);
   vec3 dir = particle_pos - uMouse; // direction towards mouse
-  
+
   particle_pos = mix(particle_pos, uMouse + normalize(dir) * 0.1, distToMouse);
 
   // add position

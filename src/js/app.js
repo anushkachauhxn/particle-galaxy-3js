@@ -43,18 +43,21 @@ export default class Sketch {
         max_radius: 1.5,
         color: "#f7b373",
         size: 1,
+        amp: 1,
       },
       {
         min_radius: 0.55,
         max_radius: 1.2,
         color: "#88b3ce",
         size: 0.6,
+        amp: 3,
       },
       {
         min_radius: 0.5,
         max_radius: 1.5,
         color: "#ce9dcf",
         size: 0.6,
+        amp: 2,
       },
     ];
     opts.forEach((op) => {
@@ -158,6 +161,7 @@ export default class Sketch {
         uTexture: { value: new THREE.TextureLoader().load(particleTexture) },
         uColor: { value: new THREE.Color(op.color) },
         uMouse: { value: new THREE.Vector3() },
+        uAmp: { value: op.amp },
         size: { value: op.size },
         time: { value: 0 },
         resolution: { value: new THREE.Vector4() },
