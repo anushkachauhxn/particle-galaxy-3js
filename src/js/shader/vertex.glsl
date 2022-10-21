@@ -1,5 +1,6 @@
 uniform float time;
 uniform float size;
+uniform vec3 uMouse;
 varying vec2 vUv;
 varying vec3 vPosition;
 uniform vec2 pixels;
@@ -223,6 +224,12 @@ void main() {
   vec3 offset1 = fbm_vec3(world_pos + offset0, 0., 0.);
   
   vec3 particle_pos = (modelMatrix * vec4(world_pos + offset0 + offset1, 1.)).xyz;
+
+  // mouse disturbance
+  float distToMouse = pow(1. - saturate(length(uMouse.xz - particle_pos.xz) - 0.1), 4.);
+  vec3 dir = particle_pos - uMouse; // direction towards mouse
+  
+  particle_pos = mix(particle_pos, uMouse + normalize(dir) * 0.1, distToMouse);
 
   // add position
   vec4 view_pos = viewMatrix * vec4(particle_pos, 1.);

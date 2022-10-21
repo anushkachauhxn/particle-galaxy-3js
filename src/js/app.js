@@ -30,23 +30,13 @@ export default class Sketch {
       0.001,
       1000
     );
-
-    /* var frustumSize = 10;
-    var aspect = window.innerWidth / window.innerHeight;
-    this.camera = new THREE.OrthographicCamera(
-      (frustumSize * aspect) / -2,
-      (frustumSize * aspect) / 2,
-      frustumSize / 2,
-      frustumSize / -2,
-      -1000,
-      1000
-    ); */
-
     this.camera.position.set(0, 2, 2);
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.time = 0;
     this.materials = [];
 
+    // Properties of different 'particle clusters'
     let opts = [
       {
         min_radius: 0.5,
@@ -71,11 +61,42 @@ export default class Sketch {
       this.addObject(op);
     });
 
-    // this.addObjects();
+    // For mouse animation
+    this.raycaster = new THREE.Raycaster();
+    this.pointer = new THREE.Vector2();
+    this.point = new THREE.Vector3();
+
+    this.raycasterEvent();
     this.resize();
     this.render();
     this.setupResize();
     // this.settings();
+  }
+
+  raycasterEvent() {
+    let mesh = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry(10, 10, 10, 10).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+    );
+
+    let test = new THREE.Mesh(
+      new THREE.SphereBufferGeometry(0.1, 10, 10),
+      new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+    );
+    this.scene.add(test);
+
+    window.addEventListener("pointermove", (event) => {
+      this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      this.raycaster.setFromCamera(this.pointer, this.camera);
+
+      const intersects = this.raycaster.intersectObjects([mesh]);
+      if (intersects[0]) {
+        // console.log(intersects[0].point);
+        this.point.copy(intersects[0].point);
+        test.position.copy(intersects[0].point);
+      }
+    });
   }
 
   settings() {
@@ -136,6 +157,7 @@ export default class Sketch {
       uniforms: {
         uTexture: { value: new THREE.TextureLoader().load(particleTexture) },
         uColor: { value: new THREE.Color(op.color) },
+        uMouse: { value: new THREE.Vector3() },
         size: { value: op.size },
         time: { value: 0 },
         resolution: { value: new THREE.Vector4() },
@@ -156,6 +178,7 @@ export default class Sketch {
     this.time += 0.05;
     this.materials.forEach((mat) => {
       mat.uniforms.time.value = this.time * 0.5;
+      mat.uniforms.uMouse.value = this.point;
     });
 
     requestAnimationFrame(this.render.bind(this));
