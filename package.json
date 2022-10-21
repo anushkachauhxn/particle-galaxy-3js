@@ -1,0 +1,21 @@
+{
+  "name": "particle-galaxy",
+  "version": "1.0.0",
+  "description": "3D webpage a galaxy of particles where user can interact with the particles using the cursor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gsap": "^3.11.3",
+    "lil-gui": "^0.17.0",
+    "parcel": "^2.7.0",
+    "three": "^0.145.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.7.0"
+  }
+}
