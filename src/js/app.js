@@ -1,7 +1,5 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import fragment from "./shader/fragment.glsl";
 import vertex from "./shader/vertex.glsl";
 import GUI from "lil-gui";
@@ -42,16 +40,9 @@ export default class Sketch {
       1000
     ); */
 
-    this.camera.position.set(0, 0, 2);
+    this.camera.position.set(0, 2, 2);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.time = 0;
-
-    this.dracoLoader = new DRACOLoader();
-    this.dracoLoader.setDecoderPath(
-      "https://raw.githubusercontent.com/mrdoob/three.js/dev//examples/js/libs/draco/"
-    );
-    this.gltf = new GLTFLoader();
-    this.gltf.setDRACOLoader(this.dracoLoader);
 
     this.isPlaying = true;
 
@@ -80,39 +71,32 @@ export default class Sketch {
     this.height = this.container.offsetHeight;
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
-
-    // image cover
-    this.imageAspect = 853 / 1280;
-    let a1, a2;
-    if (this.height / this.width > this.imageAspect) {
-      a1 = (this.width / this.height) * this.imageAspect;
-      a2 = 1;
-    } else {
-      a1 = 1;
-      a2 = this.height / this.width / this.imageAspect;
-    }
-
-    this.material.uniforms.resolution.value.x = this.width;
-    this.material.uniforms.resolution.value.y = this.height;
-    this.material.uniforms.resolution.value.z = a1;
-    this.material.uniforms.resolution.value.w = a2;
-
-    // (optional) cover with quad
-    /* const dist = this.camera.position.z;
-    const height = 1;
-    this.camera.fov = 2 * (180 / Math.PI) * Math.atan(height / (2 * dist));
-
-    if (this.width / this.height > 1) {
-      this.plane.scale.x = this.camera.aspect;
-    } else {
-      this.plane.scale.y = 1 / this.camera.aspect;
-    } */
-
     this.camera.updateProjectionMatrix();
   }
 
   addObjects() {
     let that = this;
+    let count = 10000;
+    let particleGeo = new THREE.PlaneBufferGeometry(1, 1);
+
+    let geo = new THREE.InstancedBufferGeometry();
+    geo.instanceCount = count;
+    geo.setAttribute("position", particleGeo.getAttribute("position")); // geo.position.set(particleGeo.position);
+    geo.index = particleGeo.index;
+
+    let pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      let x = (Math.random() - 0.5) * 5.5,
+        y = (Math.random() - 0.5) * 5.5,
+        z = (Math.random() - 0.5) * 5.5;
+
+      pos.set([x, y, z], i * 3);
+      geo.setAttribute(
+        "pos",
+        new THREE.InstancedBufferAttribute(pos, 3, false)
+      );
+    }
+
     this.material = new THREE.ShaderMaterial({
       extensions: {
         derivatives: "#extension GL_OES_standard_derivatives : enable",
@@ -128,21 +112,8 @@ export default class Sketch {
       fragmentShader: fragment,
     });
 
-    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
-
-    this.plane = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.plane);
-  }
-
-  stop() {
-    this.isPlaying = false;
-  }
-
-  play() {
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      this.render();
-    }
+    this.points = new THREE.Mesh(geo, this.material);
+    this.scene.add(this.points);
   }
 
   render() {
