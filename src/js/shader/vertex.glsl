@@ -5,7 +5,7 @@ uniform vec2 pixels;
 float PI = 3.141592653589793238;
 attribute vec3 pos;
 void main() {
-  vUv = uv;
+  vUv = position.xy + vec2(0.5);
   vec3 finalPos = pos + (position * 0.1);
   vec3 particlePos = (modelMatrix * vec4(pos, 1.)).xyz;
 
