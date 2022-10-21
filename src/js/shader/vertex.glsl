@@ -191,12 +191,20 @@ vec3 curl_noise(vec3 p) {
   return ( vec3(ddy - ddz, ddz - ddx, ddx - ddy) * divisor );
 }
 
+// Fractal brownian motion
 vec3 fbm_vec3(vec3 p, float frequency, float offset) {
   return vec3(
     cnoise((p+vec3(offset))*frequency),
     cnoise((p+vec3(offset+20.0))*frequency),
     cnoise((p+vec3(offset-30.0))*frequency)
   );
+}
+
+vec3 getOffset(vec3 p) {
+  float twist_scale = 0.5 + cnoise(pos) * 0.5;
+  vec3 temp_pos = rotation3dY(time * (0.1 + 0.5 * twist_scale) + length(pos.xz)) * p; // depends on distance from the center
+  vec3 offset = fbm_vec3(temp_pos, 0.5, 0.);
+  return offset * 0.1;
 }
 
 void main() {
@@ -208,8 +216,12 @@ void main() {
 
   // particle position - rotation
   // using rotational matrix, speed of rotation depends on particle_size here
-  vec3 world_pos = rotation3dY(time * 0.3 * (0.1 + 0.5 * particle_size)) * pos; 
-  vec3 particle_pos = (modelMatrix * vec4(world_pos, 1.)).xyz;
+  vec3 world_pos = rotation3dY(time * 0.3 * (0.1 + 0.5 * particle_size)) * pos;
+  
+  vec3 offset0 = getOffset(world_pos);
+  vec3 offset1 = fbm_vec3(world_pos + offset0, 0., 0.);
+  
+  vec3 particle_pos = (modelMatrix * vec4(world_pos + offset0 + offset1, 1.)).xyz;
 
   // add position
   vec4 view_pos = viewMatrix * vec4(particle_pos, 1.);
