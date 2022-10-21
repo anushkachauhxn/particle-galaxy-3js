@@ -4,6 +4,11 @@ import fragment from "./shader/fragment.glsl";
 import vertex from "./shader/vertex.glsl";
 import GUI from "lil-gui";
 import gsap from "gsap";
+// import { lerp } from "three/src/math/MathUtils";
+
+function lerp(a, b, t) {
+  return a * (1 - t) + b;
+}
 
 export default class Sketch {
   constructor(options) {
@@ -77,6 +82,8 @@ export default class Sketch {
   addObjects() {
     let that = this;
     let count = 10000;
+    let min_radius = 0.5;
+    let max_radius = 2;
     let particleGeo = new THREE.PlaneBufferGeometry(1, 1);
 
     let geo = new THREE.InstancedBufferGeometry();
@@ -86,9 +93,13 @@ export default class Sketch {
 
     let pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      let x = (Math.random() - 0.5) * 5.5,
-        y = (Math.random() - 0.5) * 5.5,
-        z = (Math.random() - 0.5) * 5.5;
+      // Torus formation
+      let angle = Math.random() * 2 * Math.PI;
+      let radius = lerp(min_radius, max_radius, Math.random());
+
+      let x = radius * Math.sin(angle);
+      let y = (Math.random() - 0.5) * 0.05;
+      let z = radius * Math.cos(angle);
 
       pos.set([x, y, z], i * 3);
       geo.setAttribute(
