@@ -95,7 +95,7 @@ export default class Sketch {
       let radius = lerp(min_radius, max_radius, Math.random());
 
       let x = radius * Math.sin(angle);
-      let y = (Math.random() - 0.5) * 0.05;
+      let y = (Math.random() - 0.5) * 0.1;
       let z = radius * Math.cos(angle);
 
       pos.set([x, y, z], i * 3);
