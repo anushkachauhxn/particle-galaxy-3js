@@ -30,7 +30,7 @@ export default class Sketch {
       0.001,
       1000
     );
-    this.camera.position.set(0, 2, 2);
+    this.camera.position.set(0, 1, 1);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.time = 0;
@@ -39,22 +39,22 @@ export default class Sketch {
     // Properties of different 'particle clusters'
     let opts = [
       {
-        min_radius: 0.5,
-        max_radius: 1.5,
+        min_radius: 0.4,
+        max_radius: 2.5,
         color: "#f7b373",
         size: 1,
         amp: 1,
       },
       {
         min_radius: 0.55,
-        max_radius: 1.2,
+        max_radius: 2.25,
         color: "#88b3ce",
         size: 0.6,
         amp: 3,
       },
       {
         min_radius: 0.5,
-        max_radius: 1.5,
+        max_radius: 2.4,
         color: "#ce9dcf",
         size: 0.6,
         amp: 2,
@@ -84,9 +84,8 @@ export default class Sketch {
 
     let mouse = new THREE.Mesh(
       new THREE.SphereBufferGeometry(0.1, 32, 16),
-      new THREE.MeshBasicMaterial({ color: 0x000000 })
+      new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
     );
-    this.scene.add(mouse);
 
     window.addEventListener("pointermove", (event) => {
       this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
