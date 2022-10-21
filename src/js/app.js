@@ -1,14 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { lerp } from "three/src/math/MathUtils";
 import fragment from "./shader/fragment.glsl";
 import vertex from "./shader/vertex.glsl";
 import GUI from "lil-gui";
 import gsap from "gsap";
-// import { lerp } from "three/src/math/MathUtils";
-
-function lerp(a, b, t) {
-  return a * (1 - t) + b;
-}
+import particleTexture from "../assets/particle.png";
 
 export default class Sketch {
   constructor(options) {
@@ -83,7 +80,7 @@ export default class Sketch {
     let that = this;
     let count = 10000;
     let min_radius = 0.5;
-    let max_radius = 2;
+    let max_radius = 1;
     let particleGeo = new THREE.PlaneBufferGeometry(1, 1);
 
     let geo = new THREE.InstancedBufferGeometry();
@@ -114,11 +111,13 @@ export default class Sketch {
       },
       side: THREE.DoubleSide,
       uniforms: {
+        uTexture: { value: new THREE.TextureLoader().load(particleTexture) },
         time: { value: 0 },
         resolution: { value: new THREE.Vector4() },
       },
       // wireframe: true,
-      // transparent: true,
+      transparent: true,
+      depthTest: false,
       vertexShader: vertex,
       fragmentShader: fragment,
     });
