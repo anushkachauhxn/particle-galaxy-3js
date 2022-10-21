@@ -2,7 +2,7 @@
   "name": "particle-galaxy",
   "version": "1.0.0",
   "description": "3D webpage a galaxy of particles where user can interact with the particles using the cursor.",
-  "main": "index.js",
+  "source": "src/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
