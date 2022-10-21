@@ -202,10 +202,14 @@ vec3 fbm_vec3(vec3 p, float frequency, float offset) {
 void main() {
   vUv = position.xy + vec2(0.5);
   vec3 final_pos = pos + (position * 0.1);
-  vec3 particle_pos = (modelMatrix * vec4(pos, 1.)).xyz;
 
   // particle size
   float particle_size = cnoise(pos * 5.) * 0.5 + 0.5;
+
+  // particle position - rotation
+  // using rotational matrix, speed of rotation depends on particle_size here
+  vec3 world_pos = rotation3dY(time * 0.3 * (0.1 + 0.5 * particle_size)) * pos; 
+  vec3 particle_pos = (modelMatrix * vec4(world_pos, 1.)).xyz;
 
   // add position
   vec4 view_pos = viewMatrix * vec4(particle_pos, 1.);
