@@ -79,11 +79,11 @@ export default class Sketch {
       new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
     );
 
-    let test = new THREE.Mesh(
-      new THREE.SphereBufferGeometry(0.1, 10, 10),
-      new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+    let mouse = new THREE.Mesh(
+      new THREE.SphereBufferGeometry(0.1, 32, 16),
+      new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
-    this.scene.add(test);
+    this.scene.add(mouse);
 
     window.addEventListener("pointermove", (event) => {
       this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -94,7 +94,7 @@ export default class Sketch {
       if (intersects[0]) {
         // console.log(intersects[0].point);
         this.point.copy(intersects[0].point);
-        test.position.copy(intersects[0].point);
+        mouse.position.copy(intersects[0].point);
       }
     });
   }
